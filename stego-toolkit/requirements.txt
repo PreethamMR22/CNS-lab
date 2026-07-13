@@ -1,0 +1,8 @@
+Flask==2.3.3
+Werkzeug==2.3.7
+stegano==0.10.1
+Pillow==10.0.1
+numpy==1.24.3
+matplotlib==3.7.2
+scipy
+cryptography

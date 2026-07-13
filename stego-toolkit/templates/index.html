@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Steganography Detection Toolkit</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa var(--gradient-angle), #c3cfe2 var(--gradient-angle));
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            --gradient-angle: 0deg;
+            min-height: 100vh;
+            color: #1a1a1a;
+        }
+
+        @keyframes gradientShift {
+            0% { --gradient-angle: 0deg; }
+            50% { --gradient-angle: 180deg; }
+            100% { --gradient-angle: 360deg; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            color: #2c3e50;
+            padding: 40px 0;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 12px;
+            padding: 6px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 500;
+            color: #64748b;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .tab:hover {
+            background: #f1f5f9;
+            color: #1a1a1a;
+        }
+
+        .tab.active {
+            background: #1a1a1a;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .info-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 24px;
+            margin-bottom: 30px;
+            border-radius: 12px;
+        }
+
+        .info-box h4 {
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .info-box p {
+            color: #64748b;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .supported-formats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .format-badge {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 6px 12px;
+            font-size: 12px;
+            color: #475569;
+            font-weight: 500;
+            border-radius: 6px;
+        }
+
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 60px 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: #f8fafc;
+        }
+
+        .upload-area:hover {
+            border-color: #94a3b8;
+            background: #f1f5f9;
+        }
+
+        .upload-area.dragover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .upload-area h3 {
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .upload-area p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .upload-btn:hover {
+            background: #2c3e50;
+            transform: translateY(-1px);
+        }
+
+        .message-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.2s ease;
+            background: white;
+            color: #1a1a1a;
+            font-family: 'Inter', sans-serif;
+            resize: vertical;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .message-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .analyze-btn, .hide-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .analyze-btn:not(:last-child), .hide-btn:not(:last-child) {
+            margin-right: 0;
+        }
+
+        .analyze-btn:hover, .hide-btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .analyze-btn:active, .hide-btn:active {
+            transform: translateY(0);
+        }
+
+        .hide-btn {
+            background: #8b5cf6;
+        }
+
+        .hide-btn:hover {
+            background: #7c3aed;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 24px;
+            background: #f8fafc;
+            border-radius: 12px;
+            display: none;
+            border: 1px solid #e2e8f0;
+        }
+
+        .results.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-section {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .result-section h3 {
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .result-section h4 {
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .result-section p {
+            color: #475569;
+            margin-bottom: 6px;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .result-section strong {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .status-normal {
+            border-left: 4px solid #22c55e;
+        }
+
+        .status-warning {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .status-warning h3 {
+            color: #d97706;
+        }
+
+        .status-warning strong {
+            color: #d97706;
+        }
+
+        .status-high {
+            border-left: 4px solid #ef4444;
+        }
+
+        .status-high h3 {
+            color: #dc2626;
+        }
+        
+        .status-high strong {
+            color: #dc2626;
+        }
+
+        .success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .success h3 {
+            color: #166534;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .success p {
+            color: #15803d;
+            margin-bottom: 12px;
+        }
+
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            padding: 20px;
+            color: #dc2626;
+            border-radius: 8px;
+        }
+
+        .hidden-message {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 16px;
+            margin: 16px 0;
+            color: #166534;
+            font-family: 'Inter', monospace;
+            border-radius: 8px;
+        }
+
+        .lsb-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 16px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .stat-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 16px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: #1a1a1a;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .download-btn:hover {
+            background: #2c3e50;
+            transform: translateY(-1px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading h3 {
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .loading p {
+            color: #64748b;
+        }
+
+        .spinner {
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        select {
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #1a1a1a;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+
+        select option {
+            background: white;
+            color: #1a1a1a;
+        }
+
+        label {
+            color: #1a1a1a;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        li {
+            color: #475569;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        li strong {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        h2 {
+            color: #1a1a1a;
+            font-weight: 600;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        input[type="number"] {
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #1a1a1a;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            font-size: 13px;
+            color: #475569;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Steganography Detection Toolkit</h1>
+            <p>Detect hidden messages and analyze steganography in images and audio files</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('detect')">🔍 Detect Steganography</button>
+            <button class="tab" onclick="showTab('hide')">📝 Hide Message</button>
+            <button class="tab" onclick="showTab('batch')">📁 Batch Analysis</button>
+            <button class="tab" onclick="showTab('crypto')">🔐 Cryptography</button>
+            <button class="tab" onclick="showTab('security')">🛡️ Security</button>
+            <button class="tab" onclick="showTab('history')">📊 History</button>
+            <button class="tab" onclick="showTab('about')">📚 About</button>
+        </div>
+
+        <!-- Detect Tab -->
+        <div id="detect" class="tab-content active">
+            <div class="info-box">
+                <h4>📁 Supported File Formats</h4>
+                <div class="supported-formats">
+                    <span class="format-badge">PNG</span>
+                    <span class="format-badge">JPG/JPEG</span>
+                    <span class="format-badge">BMP</span>
+                    <span class="format-badge">TIFF</span>
+                    <span class="format-badge">WAV</span>
+                    <span class="format-badge">MP3</span>
+                </div>
+            </div>
+
+            <div class="upload-area" onclick="document.getElementById('detectFile').click()" 
+                 ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                <div>
+                    <h3>📤 Drop file here or click to upload</h3>
+                    <p>Maximum file size: 16MB</p>
+                    <input type="file" id="detectFile" class="file-input" onchange="handleFileSelect(event)">
+                    <button class="upload-btn">Choose File</button>
+                </div>
+            </div>
+
+            <button class="analyze-btn" onclick="analyzeFile()">🔍 Analyze File</button>
+
+            <div id="detectResults" class="results"></div>
+        </div>
+
+        <!-- Hide Tab -->
+        <div id="hide" class="tab-content">
+            <div class="info-box">
+                <h4>📝 Hide a Secret Message</h4>
+                <p>Upload an image and enter a secret message to hide using various steganography methods.</p>
+            </div>
+
+            <div class="upload-area" onclick="document.getElementById('hideFile').click()" 
+                 ondrop="handleDropHide(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                <div>
+                    <h3>📤 Drop image here or click to upload</h3>
+                    <p>Only image files are supported for hiding messages</p>
+                    <input type="file" id="hideFile" class="file-input" onchange="handleFileSelectHide(event)">
+                    <button class="upload-btn">Choose Image</button>
+                </div>
+            </div>
+
+            <textarea id="secretMessage" class="message-input" placeholder="Enter your secret message here..." rows="4"></textarea>
+
+            <div style="margin-bottom: 20px;">
+                <label style="margin-right: 15px;">Steganography Method:</label>
+                <select id="hideMethod">
+                    <option value="lsb">LSB (Least Significant Bit)</option>
+                    <option value="red">RED (Red Channel)</option>
+                </select>
+            </div>
+
+            <button class="hide-btn" onclick="hideMessage()">📝 Hide Message</button>
+
+            <div id="hideResults" class="results"></div>
+        </div>
+
+        <!-- Batch Analysis Tab -->
+        <div id="batch" class="tab-content">
+            <div class="info-box">
+                <h4>📁 Batch File Analysis</h4>
+                <p>Upload multiple files at once for comprehensive steganography analysis.</p>
+            </div>
+
+            <div class="upload-area" onclick="document.getElementById('batchFiles').click()" 
+                 ondrop="handleDropBatch(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                <div>
+                    <h3>📤 Drop multiple files here or click to upload</h3>
+                    <p>Select multiple files for batch analysis</p>
+                    <input type="file" id="batchFiles" class="file-input" multiple onchange="handleFileSelectBatch(event)">
+                    <button class="upload-btn">Choose Files</button>
+                </div>
+            </div>
+
+            <button class="analyze-btn" onclick="batchAnalyze()">🔍 Analyze All Files</button>
+
+            <div id="batchResults" class="results"></div>
+        </div>
+
+        <!-- Cryptography Tab -->
+        <div id="crypto" class="tab-content">
+            <div class="info-box">
+                <h4>🔐 Cryptography Tools</h4>
+                <p>Hash generation, encoding/decoding, and classical cipher tools.</p>
+            </div>
+
+            <!-- Hash Generator -->
+            <div class="result-section">
+                <h3>🔢 Hash Generator</h3>
+                <textarea id="hashInput" class="message-input" placeholder="Enter text to hash..." rows="3"></textarea>
+                <div style="margin-bottom: 20px;">
+                    <label style="margin-right: 15px;">Algorithm:</label>
+                    <select id="hashAlgorithm">
+                        <option value="md5">MD5</option>
+                        <option value="sha1">SHA-1</option>
+                        <option value="sha256" selected>SHA-256</option>
+                        <option value="sha512">SHA-512</option>
+                    </select>
+                </div>
+                <button class="analyze-btn" onclick="generateHash()">🔢 Generate Hash</button>
+                <div id="hashResults" class="results"></div>
+            </div>
+
+            <!-- Encode/Decode -->
+            <div class="result-section">
+                <h3>🔄 Encode/Decode</h3>
+                <textarea id="encodeInput" class="message-input" placeholder="Enter text to encode/decode..." rows="3"></textarea>
+                <div style="margin-bottom: 20px;">
+                    <label style="margin-right: 15px;">Method:</label>
+                    <select id="encodeMethod">
+                        <option value="base64">Base64</option>
+                        <option value="url">URL</option>
+                        <option value="hex">Hex</option>
+                        <option value="binary">Binary</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="analyze-btn" onclick="encodeText()">🔤 Encode</button>
+                    <button class="hide-btn" onclick="decodeText()">🔓 Decode</button>
+                </div>
+                <div id="encodeResults" class="results"></div>
+            </div>
+
+            <!-- Caesar Cipher -->
+            <div class="result-section">
+                <h3>🔤 Caesar Cipher</h3>
+                <textarea id="caesarInput" class="message-input" placeholder="Enter text to encrypt/decrypt..." rows="3"></textarea>
+                <div style="margin-bottom: 20px;">
+                    <label style="margin-right: 15px;">Shift:</label>
+                    <input type="number" id="caesarShift" value="3" min="1" max="25" style="width: 100px;">
+                </div>
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="analyze-btn" onclick="caesarEncrypt()">🔒 Encrypt</button>
+                    <button class="hide-btn" onclick="caesarDecrypt()">🔓 Decrypt</button>
+                </div>
+                <div id="caesarResults" class="results"></div>
+            </div>
+
+            <!-- Vigenère Cipher -->
+            <div class="result-section">
+                <h3>🔑 Vigenère Cipher</h3>
+                <textarea id="vigenereInput" class="message-input" placeholder="Enter text to encrypt/decrypt..." rows="3"></textarea>
+                <input type="text" id="vigenereKey" class="message-input" placeholder="Enter encryption key..." style="margin-bottom: 20px;">
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="analyze-btn" onclick="vigenereEncrypt()">🔒 Encrypt</button>
+                    <button class="hide-btn" onclick="vigenereDecrypt()">🔓 Decrypt</button>
+                </div>
+                <div id="vigenereResults" class="results"></div>
+            </div>
+        </div>
+
+        <!-- Security Tab -->
+        <div id="security" class="tab-content">
+            <div class="info-box">
+                <h4>🛡️ Security Tools</h4>
+                <p>Password analysis, IP analysis, and network security tools.</p>
+            </div>
+
+            <!-- Password Analyzer -->
+            <div class="result-section">
+                <h3>🔑 Password Strength Analyzer</h3>
+                <input type="password" id="passwordInput" class="message-input" placeholder="Enter password to analyze..." style="margin-bottom: 20px;">
+                <button class="analyze-btn" onclick="analyzePassword()">🔍 Analyze Password</button>
+                <div id="passwordResults" class="results"></div>
+            </div>
+
+            <!-- IP Analyzer -->
+            <div class="result-section">
+                <h3>🌐 IP Address Analyzer</h3>
+                <input type="text" id="ipInput" class="message-input" placeholder="Enter IP address (e.g., 8.8.8.8)..." style="margin-bottom: 20px;">
+                <button class="analyze-btn" onclick="analyzeIP()">🔍 Analyze IP</button>
+                <div id="ipResults" class="results"></div>
+            </div>
+
+            <!-- Port Scanner -->
+            <div class="result-section">
+                <h3>🔌 Port Scanner</h3>
+                <input type="text" id="portscanInput" class="message-input" placeholder="Enter IP address to scan..." style="margin-bottom: 20px;">
+                <button class="analyze-btn" onclick="scanPorts()">🔍 Scan Ports</button>
+                <div id="portscanResults" class="results"></div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="history" class="tab-content">
+            <div class="info-box">
+                <h4>📊 Analysis History</h4>
+                <p>View your recent steganography analysis results.</p>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button class="analyze-btn" onclick="loadHistory()">🔄 Refresh History</button>
+                <button class="hide-btn" onclick="clearHistory()">🗑️ Clear History</button>
+            </div>
+
+            <div id="historyResults" class="results"></div>
+        </div>
+
+        <!-- About Tab -->
+        <div id="about" class="tab-content">
+            <h2>🔍 About Steganography Detection Toolkit</h2>
+            
+            <div class="result-section">
+                <h3>🎯 What This Tool Does</h3>
+                <p>This toolkit detects whether an image or audio file contains hidden data through steganography. It uses multiple detection methods including:</p>
+                <ul style="margin-top: 15px; margin-left: 20px;">
+                    <li><strong>File Entropy Analysis</strong> - Detects encrypted/hidden data through entropy calculation</li>
+                    <li><strong>LSB Detection</strong> - Finds messages hidden in Least Significant Bits</li>
+                    <li><strong>Statistical Analysis</strong> - Identifies unusual patterns and anomalies</li>
+                    <li><strong>Metadata Analysis</strong> - Checks for hidden information in file metadata</li>
+                </ul>
+            </div>
+
+            <div class="result-section">
+                <h3>🔬 Detection Methods</h3>
+                <div class="grid">
+                    <div class="stat-item">
+                        <div class="stat-value">🔢</div>
+                        <div class="stat-label">Entropy Analysis</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">📊</div>
+                        <div class="stat-label">Statistical Tests</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">🎨</div>
+                        <div class="stat-label">Pattern Detection</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">📝</div>
+                        <div class="stat-label">Metadata Scan</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-section">
+                <h3>⚠️ Warning Indicators</h3>
+                <p>The tool will alert you to potential steganography with these indicators:</p>
+                <ul style="margin-top: 15px; margin-left: 20px;">
+                    <li><strong>High entropy (>7.5)</strong> - Possible encrypted/hidden data</li>
+                    <li><strong>Low color diversity</strong> - Suspicious pixel patterns</li>
+                    <li><strong>Irregular histograms</strong> - Evidence of manipulation</li>
+                    <li><strong>Large metadata fields</strong> - Hidden information</li>
+                </ul>
+            </div>
+
+            <div class="result-section">
+                <h3>🚀 How to Use</h3>
+                <ol style="margin-top: 15px; margin-left: 20px;">
+                    <li>Go to the "Detect Steganography" tab</li>
+                    <li>Upload an image or audio file</li>
+                    <li>Click "Analyze File" to run detection</li>
+                    <li>Review the results for steganography indicators</li>
+                    <li>Use the "Hide Message" tab to create steganography</li>
+                </ol>
+            </div>
+
+            <div class="result-section">
+                <h3>🔧 Technical Details</h3>
+                <p><strong>LSB Steganography:</strong> Hides data in the least significant bits of pixel values.</p>
+                <p><strong>Entropy:</strong> Measures randomness - high entropy suggests encrypted content.</p>
+                <p><strong>Statistical Analysis:</strong> Detects patterns that indicate hidden data manipulation.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFile = null;
+        let selectedHideFile = null;
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab button
+            event.target.classList.add('active');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                selectedFile = files[0];
+                updateUploadArea('detect', selectedFile);
+            }
+        }
+
+        function handleDropHide(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                selectedHideFile = files[0];
+                updateUploadArea('hide', selectedHideFile);
+            }
+        }
+
+        function handleFileSelect(e) {
+            selectedFile = e.target.files[0];
+            updateUploadArea('detect', selectedFile);
+        }
+
+        function handleFileSelectHide(e) {
+            selectedHideFile = e.target.files[0];
+            updateUploadArea('hide', selectedHideFile);
+        }
+
+        function updateUploadArea(type, file) {
+            const uploadArea = type === 'detect' ? 
+                document.querySelector('#detect .upload-area') : 
+                document.querySelector('#hide .upload-area');
+            
+            if (file) {
+                uploadArea.innerHTML = `
+                    <div>
+                        <h3>📄 ${file.name}</h3>
+                        <p>Size: ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                        <button class="upload-btn" onclick="document.getElementById('${type}File').click()">Choose Different File</button>
+                    </div>
+                `;
+            }
+        }
+
+        function analyzeFile() {
+            if (!selectedFile) {
+                alert('Please select a file first');
+                return;
+            }
+
+            const resultsDiv = document.getElementById('detectResults');
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>🔍 Analyzing file...</h3>
+                    <p>This may take a moment for large files</p>
+                </div>
+            `;
+            resultsDiv.classList.add('show');
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                } else {
+                    displayResults(data);
+                }
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            });
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('detectResults');
+            
+            let html = `
+                <div class="result-section">
+                    <h3>📁 File Information</h3>
+                    <p><strong>Filename:</strong> ${data.filename}</p>
+                    <p><strong>File Type:</strong> ${data.file_type}</p>
+                    <p><strong>File Size:</strong> ${(data.entropy.file_size / 1024 / 1024).toFixed(2)} MB</p>
+                    <p><strong>File Hash:</strong> ${data.file_hash ? data.file_hash.substring(0, 16) + '...' : 'N/A'}</p>
+                </div>
+            `;
+
+            // Entropy Analysis
+            const entropyStatus = data.entropy.status === 'high' ? 'status-high' : 
+                                 data.entropy.status === 'low' ? 'status-warning' : 'status-normal';
+            html += `
+                <div class="result-section ${entropyStatus}">
+                    <h3>🔢 File Entropy Analysis</h3>
+                    <p><strong>Entropy:</strong> ${data.entropy.entropy}</p>
+                    <p><strong>Status:</strong> ${data.entropy.message}</p>
+                </div>
+            `;
+
+            if (data.file_type === 'image') {
+                // Metadata Analysis
+                const metadataStatus = data.metadata.status === 'warning' ? 'status-warning' : 'status-normal';
+                html += `
+                    <div class="result-section ${metadataStatus}">
+                        <h3>📝 Metadata Analysis</h3>
+                        <p><strong>Format:</strong> ${data.metadata.metadata.format}</p>
+                        <p><strong>Size:</strong> ${data.metadata.metadata.size[0]}x${data.metadata.metadata.size[1]}</p>
+                        <p><strong>Mode:</strong> ${data.metadata.metadata.mode}</p>
+                        ${data.metadata.suspicious.length > 0 ? 
+                            `<p><strong>Suspicious:</strong> ${data.metadata.suspicious.join(', ')}</p>` : ''}
+                    </div>
+                `;
+
+                // LSB Analysis
+                html += `
+                    <div class="result-section ${data.lsb.message_found ? 'status-high' : 'status-normal'}">
+                        <h3>🎨 LSB Analysis</h3>
+                        ${data.lsb.message_found ? 
+                            `<div class="hidden-message">Hidden Message Found: ${data.lsb.hidden_message}</div>` :
+                            '<p>No LSB message detected</p>'}
+                        <img src="${data.lsb.lsb_image}" alt="LSB Analysis" class="lsb-image">
+                    </div>
+                `;
+
+                // Statistical Analysis
+                const statStatus = data.statistics.diversity_status === 'warning' ? 'status-warning' : 'status-normal';
+                html += `
+                    <div class="result-section ${statStatus}">
+                        <h3>📊 Statistical Analysis</h3>
+                        <div class="grid">
+                            <div class="stat-item">
+                                <div class="stat-value">${data.statistics.mean_r}</div>
+                                <div class="stat-label">Mean Red</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${data.statistics.mean_g}</div>
+                                <div class="stat-label">Mean Green</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${data.statistics.mean_b}</div>
+                                <div class="stat-label">Mean Blue</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">${data.statistics.diversity}%</div>
+                                <div class="stat-label">Color Diversity</div>
+                            </div>
+                        </div>
+                        <p><strong>Unique Colors:</strong> ${data.statistics.unique_colors.toLocaleString()} / ${data.statistics.total_pixels.toLocaleString()}</p>
+                    </div>
+                `;
+
+                // Chi-Square Test
+                if (data.statistics.chi_square) {
+                    const chiStatus = data.statistics.chi_square.lsb_detected ? 'status-high' : 'status-normal';
+                    html += `
+                        <div class="result-section ${chiStatus}">
+                            <h3>🧮 Chi-Square LSB Test</h3>
+                            <p><strong>Chi-Square Value:</strong> ${data.statistics.chi_square.chi_square}</p>
+                            <p><strong>Critical Value:</strong> ${data.statistics.chi_square.critical_value}</p>
+                            <p><strong>Result:</strong> ${data.statistics.chi_square.message}</p>
+                        </div>
+                    `;
+                }
+
+                // RS Analysis
+                if (data.statistics.rs_analysis) {
+                    const rsStatus = data.statistics.rs_analysis.stego_detected ? 'status-warning' : 'status-normal';
+                    html += `
+                        <div class="result-section ${rsStatus}">
+                            <h3>🔬 RS Analysis</h3>
+                            <p><strong>RS Ratio:</strong> ${data.statistics.rs_analysis.rs_ratio}</p>
+                            <p><strong>Regular Groups:</strong> ${data.statistics.rs_analysis.regular_groups}</p>
+                            <p><strong>Singular Groups:</strong> ${data.statistics.rs_analysis.singular_groups}</p>
+                            <p><strong>Result:</strong> ${data.statistics.rs_analysis.message}</p>
+                        </div>
+                    `;
+                }
+
+                // Frequency Domain Analysis
+                if (data.frequency_analysis) {
+                    const freqStatus = data.frequency_analysis.anomaly_detected ? 'status-warning' : 'status-normal';
+                    html += `
+                        <div class="result-section ${freqStatus}">
+                            <h3>📡 Frequency Domain Analysis (FFT)</h3>
+                            <p><strong>High-Frequency Ratio:</strong> ${data.frequency_analysis.high_freq_ratio}</p>
+                            <p><strong>Total Energy:</strong> ${data.frequency_analysis.total_energy}</p>
+                            <p><strong>Result:</strong> ${data.frequency_analysis.message}</p>
+                            <img src="${data.frequency_analysis.fft_image}" alt="FFT Analysis" class="lsb-image">
+                        </div>
+                    `;
+                }
+
+                // Color Channel Analysis
+                if (data.channel_analysis) {
+                    const channelStatus = data.channel_analysis.channel_anomaly ? 'status-warning' : 'status-normal';
+                    html += `
+                        <div class="result-section ${channelStatus}">
+                            <h3>🎨 Color Channel Analysis</h3>
+                            <div class="grid">
+                                <div class="stat-item">
+                                    <div class="stat-value">${data.channel_analysis.red_entropy}</div>
+                                    <div class="stat-label">Red Entropy</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">${data.channel_analysis.green_entropy}</div>
+                                    <div class="stat-label">Green Entropy</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">${data.channel_analysis.blue_entropy}</div>
+                                    <div class="stat-label">Blue Entropy</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">${data.channel_analysis.entropy_difference}</div>
+                                    <div class="stat-label">Entropy Diff</div>
+                                </div>
+                            </div>
+                            <p><strong>Result:</strong> ${data.channel_analysis.anomaly_message}</p>
+                        </div>
+                    `;
+                }
+
+                // Histogram Analysis
+                if (data.histogram_analysis) {
+                    const histStatus = data.histogram_analysis.histogram_anomaly ? 'status-warning' : 'status-normal';
+                    html += `
+                        <div class="result-section ${histStatus}">
+                            <h3>📊 Histogram Analysis</h3>
+                            <p><strong>Red Peak:</strong> ${data.histogram_analysis.red_peaks}</p>
+                            <p><strong>Green Peak:</strong> ${data.histogram_analysis.green_peaks}</p>
+                            <p><strong>Blue Peak:</strong> ${data.histogram_analysis.blue_peaks}</p>
+                            <p><strong>Average Std Dev:</strong> ${data.histogram_analysis.avg_std}</p>
+                            <p><strong>Result:</strong> ${data.histogram_analysis.anomaly_message}</p>
+                        </div>
+                    `;
+                }
+            }
+
+            // Audio Analysis
+            if (data.audio_analysis && !data.audio_analysis.error) {
+                const audioStatus = data.audio_analysis.stego_detected ? 'status-high' : 'status-normal';
+                html += `
+                    <div class="result-section ${audioStatus}">
+                        <h3>🎵 Audio Analysis</h3>
+                        <p><strong>Duration:</strong> ${data.audio_analysis.duration} seconds</p>
+                        <p><strong>Sample Rate:</strong> ${data.audio_analysis.frame_rate} Hz</p>
+                        <p><strong>Channels:</strong> ${data.audio_analysis.channels}</p>
+                        <p><strong>Entropy:</strong> ${data.audio_analysis.entropy}</p>
+                        <p><strong>LSB Ratio:</strong> ${data.audio_analysis.lsb_ratio}</p>
+                        <p><strong>High-Freq Ratio:</strong> ${data.audio_analysis.high_freq_ratio}</p>
+                        <p><strong>Result:</strong> ${data.audio_analysis.message}</p>
+                    </div>
+                `;
+            }
+
+            resultsDiv.innerHTML = html;
+        }
+
+        function hideMessage() {
+            if (!selectedHideFile) {
+                alert('Please select an image file first');
+                return;
+            }
+
+            const message = document.getElementById('secretMessage').value;
+            if (!message.trim()) {
+                alert('Please enter a secret message');
+                return;
+            }
+
+            const method = document.getElementById('hideMethod').value;
+
+            const resultsDiv = document.getElementById('hideResults');
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>📝 Hiding message...</h3>
+                    <p>This may take a moment</p>
+                </div>
+            `;
+            resultsDiv.classList.add('show');
+
+            const formData = new FormData();
+            formData.append('file', selectedHideFile);
+            formData.append('message', message);
+            formData.append('method', method);
+
+            fetch('/hide/advanced', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Message Hidden Successfully!</h3>
+                            <p>${data.message}</p>
+                            <a href="/download/${data.output_filename}" class="download-btn">📥 Download Steganography Image</a>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            });
+        }
+
+        // Batch analysis functions
+        let selectedBatchFiles = [];
+
+        function handleDropBatch(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                selectedBatchFiles = Array.from(files);
+                updateBatchUploadArea();
+            }
+        }
+
+        function handleFileSelectBatch(e) {
+            selectedBatchFiles = Array.from(e.target.files);
+            updateBatchUploadArea();
+        }
+
+        function updateBatchUploadArea() {
+            const uploadArea = document.querySelector('#batch .upload-area');
+            if (selectedBatchFiles.length > 0) {
+                uploadArea.innerHTML = `
+                    <div>
+                        <h3>📄 ${selectedBatchFiles.length} files selected</h3>
+                        <p>Total size: ${(selectedBatchFiles.reduce((acc, f) => acc + f.size, 0) / 1024 / 1024).toFixed(2)} MB</p>
+                        <button class="upload-btn" onclick="document.getElementById('batchFiles').click()">Choose Different Files</button>
+                    </div>
+                `;
+            }
+        }
+
+        function batchAnalyze() {
+            if (selectedBatchFiles.length === 0) {
+                alert('Please select files first');
+                return;
+            }
+
+            const resultsDiv = document.getElementById('batchResults');
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>🔍 Analyzing ${selectedBatchFiles.length} files...</h3>
+                    <p>This may take a moment</p>
+                </div>
+            `;
+            resultsDiv.classList.add('show');
+
+            const formData = new FormData();
+            selectedBatchFiles.forEach(file => {
+                formData.append('files', file);
+            });
+
+            fetch('/batch', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                } else {
+                    displayBatchResults(data);
+                }
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            });
+        }
+
+        function displayBatchResults(data) {
+            const resultsDiv = document.getElementById('batchResults');
+            
+            let html = `
+                <div class="result-section">
+                    <h3>📊 Batch Analysis Results</h3>
+                    <p><strong>Total Files:</strong> ${data.total_files}</p>
+                </div>
+            `;
+
+            data.results.forEach((result, index) => {
+                const status = result.error ? 'status-high' : 
+                              (result.entropy?.status === 'high' || result.chi_square?.lsb_detected) ? 'status-warning' : 'status-normal';
+                
+                html += `
+                    <div class="result-section ${status}">
+                        <h4>📄 ${result.filename}</h4>
+                        ${result.error ? 
+                            `<p class="error">Error: ${result.error}</p>` :
+                            `<p><strong>Entropy:</strong> ${result.entropy?.entropy || 'N/A'}</p>
+                             <p><strong>Chi-Square:</strong> ${result.chi_square?.chi_square || 'N/A'}</p>
+                             <p><strong>LSB Detected:</strong> ${result.chi_square?.lsb_detected ? 'Yes' : 'No'}</p>`
+                        }
+                    </div>
+                `;
+            });
+
+            resultsDiv.innerHTML = html;
+        }
+
+        // History functions
+        function loadHistory() {
+            const resultsDiv = document.getElementById('historyResults');
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>📊 Loading history...</h3>
+                </div>
+            `;
+            resultsDiv.classList.add('show');
+
+            fetch('/history')
+            .then(response => response.json())
+            .then(data => {
+                displayHistory(data.history);
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            });
+        }
+
+        function displayHistory(history) {
+            const resultsDiv = document.getElementById('historyResults');
+            
+            if (history.length === 0) {
+                resultsDiv.innerHTML = `<div class="info-box"><p>No analysis history yet.</p></div>`;
+                return;
+            }
+
+            let html = `
+                <div class="result-section">
+                    <h3>📊 Analysis History (${history.length} entries)</h3>
+                </div>
+            `;
+
+            history.reverse().forEach(entry => {
+                const status = entry.stego_detected ? 'status-high' : 'status-normal';
+                html += `
+                    <div class="result-section ${status}">
+                        <h4>📄 ${entry.filename}</h4>
+                        <p><strong>Type:</strong> ${entry.file_type}</p>
+                        <p><strong>Entropy:</strong> ${entry.entropy}</p>
+                        <p><strong>Stego Detected:</strong> ${entry.stego_detected ? 'Yes' : 'No'}</p>
+                        <p><strong>Timestamp:</strong> ${new Date(entry.timestamp).toLocaleString()}</p>
+                        <p><strong>Hash:</strong> ${entry.file_hash.substring(0, 16)}...</p>
+                    </div>
+                `;
+            });
+
+            resultsDiv.innerHTML = html;
+        }
+
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear all history?')) {
+                fetch('/history/clear', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    loadHistory();
+                })
+                .catch(error => {
+                    alert('Error clearing history');
+                });
+            }
+        }
+
+        // Cryptography functions
+        function generateHash() {
+            const text = document.getElementById('hashInput').value;
+            const algorithm = document.getElementById('hashAlgorithm').value;
+            const resultsDiv = document.getElementById('hashResults');
+            
+            if (!text.trim()) {
+                resultsDiv.innerHTML = `<div class="error">Please enter text to hash</div>`;
+                resultsDiv.classList.add('show');
+                return;
+            }
+            
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>🔢 Generating hash...</h3>
+                </div>
+            `;
+            resultsDiv.classList.add('show');
+            
+            fetch('/crypto/hash', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text, algorithm })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="result-section">
+                            <h4>🔢 Hash Result (${data.algorithm.toUpperCase()})</h4>
+                            <p><strong>Hash:</strong> <code style="word-break: break-all;">${data.hash}</code></p>
+                            <p><strong>Input Length:</strong> ${data.input_length} characters</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            });
+        }
+
+        function encodeText() {
+            const text = document.getElementById('encodeInput').value;
+            const method = document.getElementById('encodeMethod').value;
+            const resultsDiv = document.getElementById('encodeResults');
+            
+            if (!text.trim()) {
+                resultsDiv.innerHTML = `<div class="error">Please enter text to encode</div>`;
+                resultsDiv.classList.add('show');
+                return;
+            }
+            
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>🔤 Encoding...</h3>
+                </div>
+            `;
+            resultsDiv.classList.add('show');
+            
+            fetch('/crypto/encode', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text, method })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="result-section">
+                            <h4>🔤 Encoded Result (${method.toUpperCase()})</h4>
+                            <p><strong>Result:</strong> <code style="word-break: break-all;">${data.result}</code></p>
+                            <p><strong>Input Length:</strong> ${data.input_length} characters</p>
+                            <p><strong>Output Length:</strong> ${data.output_length} characters</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            });
+        }
+
+        function decodeText() {
+            const text = document.getElementById('encodeInput').value;
+            const method = document.getElementById('encodeMethod').value;
+            const resultsDiv = document.getElementById('encodeResults');
+            
+            if (!text.trim()) {
+                resultsDiv.innerHTML = `<div class="error">Please enter text to decode</div>`;
+                resultsDiv.classList.add('show');
+                return;
+            }
+            
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>🔓 Decoding...</h3>
+                </div>
+            `;
+            resultsDiv.classList.add('show');
+            
+            fetch('/crypto/decode', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text, method })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="result-section">
+                            <h4>🔓 Decoded Result (${method.toUpperCase()})</h4>
+                            <p><strong>Result:</strong> <code style="word-break: break-all;">${data.result}</code></p>
+                            <p><strong>Input Length:</strong> ${data.input_length} characters</p>
+                            <p><strong>Output Length:</strong> ${data.output_length} characters</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            });
+        }
+
+        function caesarEncrypt() {
+            const text = document.getElementById('caesarInput').value;
+            const shift = document.getElementById('caesarShift').value;
+            const resultsDiv = document.getElementById('caesarResults');
+            
+            if (!text.trim()) {
+                resultsDiv.innerHTML = `<div class="error">Please enter text to encrypt</div>`;
+                resultsDiv.classList.add('show');
+                return;
+            }
+            
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>🔒 Encrypting...</h3>
+                </div>
+            `;
+            resultsDiv.classList.add('show');
+            
+            fetch('/crypto/caesar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text, shift, operation: 'encrypt' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="result-section">
+                            <h4>🔒 Encrypted Result</h4>
+                            <p><strong>Result:</strong> <code>${data.result}</code></p>
+                            <p><strong>Shift:</strong> ${data.shift}</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            });
+        }
+
+        function caesarDecrypt() {
+            const text = document.getElementById('caesarInput').value;
+            const shift = document.getElementById('caesarShift').value;
+            const resultsDiv = document.getElementById('caesarResults');
+            
+            if (!text.trim()) {
+                resultsDiv.innerHTML = `<div class="error">Please enter text to decrypt</div>`;
+                resultsDiv.classList.add('show');
+                return;
+            }
+            
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>🔓 Decrypting...</h3>
+                </div>
+            `;
+            resultsDiv.classList.add('show');
+            
+            fetch('/crypto/caesar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text, shift, operation: 'decrypt' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="result-section">
+                            <h4>🔓 Decrypted Result</h4>
+                            <p><strong>Result:</strong> <code>${data.result}</code></p>
+                            <p><strong>Shift:</strong> ${data.shift}</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            });
+        }
+
+        function vigenereEncrypt() {
+            const text = document.getElementById('vigenereInput').value;
+            const key = document.getElementById('vigenereKey').value;
+            const resultsDiv = document.getElementById('vigenereResults');
+            
+            if (!text.trim()) {
+                resultsDiv.innerHTML = `<div class="error">Please enter text to encrypt</div>`;
+                resultsDiv.classList.add('show');
+                return;
+            }
+            if (!key.trim()) {
+                resultsDiv.innerHTML = `<div class="error">Please enter encryption key</div>`;
+                resultsDiv.classList.add('show');
+                return;
+            }
+            
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>🔒 Encrypting...</h3>
+                </div>
+            `;
+            resultsDiv.classList.add('show');
+            
+            fetch('/crypto/vigenere', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text, key, operation: 'encrypt' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="result-section">
+                            <h4>🔒 Encrypted Result</h4>
+                            <p><strong>Result:</strong> <code>${data.result}</code></p>
+                            <p><strong>Key:</strong> ${data.key}</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            });
+        }
+
+        function vigenereDecrypt() {
+            const text = document.getElementById('vigenereInput').value;
+            const key = document.getElementById('vigenereKey').value;
+            const resultsDiv = document.getElementById('vigenereResults');
+            
+            if (!text.trim()) {
+                resultsDiv.innerHTML = `<div class="error">Please enter text to decrypt</div>`;
+                resultsDiv.classList.add('show');
+                return;
+            }
+            if (!key.trim()) {
+                resultsDiv.innerHTML = `<div class="error">Please enter decryption key</div>`;
+                resultsDiv.classList.add('show');
+                return;
+            }
+            
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>🔓 Decrypting...</h3>
+                </div>
+            `;
+            resultsDiv.classList.add('show');
+            
+            fetch('/crypto/vigenere', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text, key, operation: 'decrypt' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="result-section">
+                            <h4>🔓 Decrypted Result</h4>
+                            <p><strong>Result:</strong> <code>${data.result}</code></p>
+                            <p><strong>Key:</strong> ${data.key}</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            });
+        }
+
+        // Security functions
+        function analyzePassword() {
+            const password = document.getElementById('passwordInput').value;
+            const resultsDiv = document.getElementById('passwordResults');
+            
+            if (!password) {
+                resultsDiv.innerHTML = `<div class="error">Please enter a password</div>`;
+                resultsDiv.classList.add('show');
+                return;
+            }
+            
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>🔍 Analyzing password...</h3>
+                </div>
+            `;
+            resultsDiv.classList.add('show');
+            
+            fetch('/security/password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                } else {
+                    const strengthColor = data.strength === 'Strong' ? '#00ff00' : data.strength === 'Medium' ? '#ffff00' : '#ff0000';
+                    resultsDiv.innerHTML = `
+                        <div class="result-section">
+                            <h4>🔑 Password Analysis</h4>
+                            <p><strong>Strength:</strong> <span style="color: ${strengthColor}; font-weight: bold;">${data.strength}</span></p>
+                            <p><strong>Score:</strong> ${data.score}/6</p>
+                            <p><strong>Entropy:</strong> ${data.entropy} bits</p>
+                            <p><strong>Length:</strong> ${data.length} characters</p>
+                            ${data.feedback.length > 0 ? `<p><strong>Feedback:</strong></p><ul>${data.feedback.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            });
+        }
+
+        function analyzeIP() {
+            const ip = document.getElementById('ipInput').value;
+            const resultsDiv = document.getElementById('ipResults');
+            
+            if (!ip.trim()) {
+                resultsDiv.innerHTML = `<div class="error">Please enter an IP address</div>`;
+                resultsDiv.classList.add('show');
+                return;
+            }
+            
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>🌐 Analyzing IP...</h3>
+                </div>
+            `;
+            resultsDiv.classList.add('show');
+            
+            fetch('/security/ip', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ip })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="result-section">
+                            <h4>🌐 IP Analysis</h4>
+                            <p><strong>IP Address:</strong> ${data.ip}</p>
+                            <p><strong>Version:</strong> ${data.version}</p>
+                            <p><strong>Private:</strong> ${data.is_private ? 'Yes' : 'No'}</p>
+                            <p><strong>Loopback:</strong> ${data.is_loopback ? 'Yes' : 'No'}</p>
+                            <p><strong>Multicast:</strong> ${data.is_multicast ? 'Yes' : 'No'}</p>
+                            <p><strong>Hostname:</strong> ${data.hostname}</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            });
+        }
+
+        function scanPorts() {
+            const ip = document.getElementById('portscanInput').value;
+            const resultsDiv = document.getElementById('portscanResults');
+            
+            if (!ip.trim()) {
+                resultsDiv.innerHTML = `<div class="error">Please enter an IP address</div>`;
+                resultsDiv.classList.add('show');
+                return;
+            }
+            
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>🔌 Scanning ports...</h3>
+                    <p>This may take a moment</p>
+                </div>
+            `;
+            resultsDiv.classList.add('show');
+            
+            fetch('/security/portscan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ip })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+                } else {
+                    let portsHtml = data.results.map(p => 
+                        `<p><strong>Port ${p.port}:</strong> ${p.status} (${p.service})</p>`
+                    ).join('');
+                    
+                    resultsDiv.innerHTML = `
+                        <div class="result-section">
+                            <h4>🔌 Port Scan Results</h4>
+                            <p><strong>IP:</strong> ${data.ip}</p>
+                            <p><strong>Scanned Ports:</strong> ${data.scanned_ports}</p>
+                            <p><strong>Open Ports:</strong> ${data.open_ports}</p>
+                            ${data.results.length > 0 ? `<div style="margin-top: 15px;">${portsHtml}</div>` : '<p>No open ports found</p>'}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                resultsDiv.innerHTML = `<div class="error">Network error: ${error.message}</div>`;
+            });
+        }
+    </script>
+</body>
+</html>
